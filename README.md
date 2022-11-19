@@ -6,13 +6,16 @@
 
 ### Использование
 
-Декодирование штрихкода в 2 шагах:
+Декодирование штрихкода в 2 шага:
 - Инициализируйте класс `OMSBarcode`
 - Вызовите метод `fromString` у класса и передайте в аргумент содержимое штрихкода
 
+Декодирование ЭЦП в 1 шаг:
+- Передайте значение `signature` в метод `decodeCSP`
+
 Пример использования:
 
-![](https://habrastorage.org/webt/7t/pt/25/7tpt25vktae0q5zzsija8qo1cbg.png)
+![](https://habrastorage.org/webt/tm/ck/b8/tmckb8tjarztmsluwmbfib2eohm.png)
 
 ```py
 from oms_barcode import OMSBarcode
@@ -28,9 +31,12 @@ print("Пол: " + oms.sex)
 print("Номер ОМС: " + oms.number)
 print("Срок годности: " + oms.exp)
 print("ЭЦП: " + oms.signature)
+
+print("ЭЦП (BETA):")
+print(oms.decodeCSP(oms.signature))
 ```
 
-### Свойства класса
+### Свойства и методы класса
 
 - `last` - Фамилия владельца
 - `first` - Имя владельца
@@ -40,3 +46,4 @@ print("ЭЦП: " + oms.signature)
 - `number` - Номер полиса ОМС
 - `exp` - Срок годности полиса в формате ДД.ММ.ГГГГ (00.00.0000 если без срока действия)
 - `signature` - ЭЦП полиса ОМС
+- `decodeCSP(string)` - ЭЦП полиса в РЕМ формате
