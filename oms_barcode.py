@@ -3,11 +3,16 @@ from base64 import standard_b64encode
 from textwrap import fill
 
 class OMSBarcode:
+	bitmap_type = ""
 	last = ""
 	first = ""
 	middle = ""
 	dob = ""
 	sex = ""
+
+	#Только тип №1
+	ogrn = ""
+	okato = ""
 	
 	number = ""
 	exp = ""
@@ -35,32 +40,68 @@ class OMSBarcode:
 		return binval
 
 	def fromString(self, string):
-		self.number = str(int(string[2:18], 16)).zfill(16)
-		snpEnd = self.FindSNPEnd(9, bytearray.fromhex(string))
-		if str(string[(snpEnd+1)*2:(snpEnd+1)*2+2]) == "01":
-			self.sex = "М"
-		else:
-			self.sex = "Ж"
-		self.dob = int(string[(snpEnd+2)*2:(snpEnd+2)*2+4],16)
-		self.dob = (datetime.datetime.strptime('1900-01-01', "%Y-%m-%d") + datetime.timedelta(days=self.dob)).strftime('%d.%m.%Y')
-		self.exp = int(string[(snpEnd+4)*2:(snpEnd+4)*2+4],16)
-		if self.exp > 0:
-			self.exp = (datetime.datetime.strptime('1900-01-01', "%Y-%m-%d") + datetime.timedelta(days=self.exp)).strftime('%d.%m.%Y')
-		else:
-			self.exp = "00.00.0000"
-		self.signature = string[65*2:]
+		self.bitmap_type = string[0:2]
+		if string[0:2] == "01":
+			self.number = str(int(string[2:18], 16)).zfill(16)
 
-		snpBuffer = bytearray.fromhex(string)[9:snpEnd-8]
-		snpBuffer = ''.join('{:02x}'.format(x) for x in snpBuffer)
-		snpChar = []
-		s = self.hextobin(snpBuffer)
-		s = [s[i:i+6] for i in range(0,len(s),6)]
-		for i in s:
-			snpChar.append(self.charTable[int(int(i, 2)/16)][int(int(i, 2)%16)])
-		snpChar = "".join(snpChar).strip().split("|")
-		self.last = snpChar[0]
-		self.first = snpChar[1]
-		self.middle = snpChar[2]
+			snpBuffer = bytearray.fromhex(string)[9:42]
+			snpBuffer.reverse()
+			snpBuffer = ''.join('{:02x}'.format(x) for x in snpBuffer)
+			snpChar = []
+			s = self.hextobin(snpBuffer)
+			s = [s[i:i+6] for i in range(0,len(s),6)]
+			for i in s:
+				snpChar.append(self.charTable[int(int(i, 2)/16)][int(int(i, 2)%16)])
+			snpChar = "".join(snpChar).strip().split("|")
+			self.last = snpChar[1][::-1]
+			self.first = snpChar[2][::-1]
+			self.middle = snpChar[0][::-1]
+
+			if str(string[51*2:51*2+2]) == "01":
+				self.sex = "М"
+			else:
+				self.sex = "Ж"
+			
+			self.dob = int(string[52*2:52*2+4], 16)
+			self.dob = (datetime.datetime.strptime('1900-01-01', "%Y-%m-%d") + datetime.timedelta(days=self.dob)).strftime('%d.%m.%Y')
+
+			self.exp = int(string[54*2:54*2+4],16)
+			if self.exp > 0:
+				self.exp = (datetime.datetime.strptime('1900-01-01', "%Y-%m-%d") + datetime.timedelta(days=self.exp)).strftime('%d.%m.%Y')
+			else:
+				self.exp = "00.00.0000"
+
+			self.ogrn = str(int(string[56*2:56*2+12], 16))
+			self.okato = str(int(string[62*2:62*2+6], 16))
+			self.signature = string[65*2:]
+		else:
+			self.number = str(int(string[2:18], 16)).zfill(16)
+			snpEnd = self.FindSNPEnd(9, bytearray.fromhex(string))
+			if str(string[(snpEnd+1)*2:(snpEnd+1)*2+2]) == "01":
+				self.sex = "М"
+			else:
+				self.sex = "Ж"
+			print(string[(snpEnd+2)*2:(snpEnd+2)*2+4])
+			self.dob = int(string[(snpEnd+2)*2:(snpEnd+2)*2+4],16)
+			self.dob = (datetime.datetime.strptime('1900-01-01', "%Y-%m-%d") + datetime.timedelta(days=self.dob)).strftime('%d.%m.%Y')
+			self.exp = int(string[(snpEnd+4)*2:(snpEnd+4)*2+4],16)
+			if self.exp > 0:
+				self.exp = (datetime.datetime.strptime('1900-01-01', "%Y-%m-%d") + datetime.timedelta(days=self.exp)).strftime('%d.%m.%Y')
+			else:
+				self.exp = "00.00.0000"
+			self.signature = string[65*2:]
+
+			snpBuffer = bytearray.fromhex(string)[9:snpEnd-8]
+			snpBuffer = ''.join('{:02x}'.format(x) for x in snpBuffer)
+			snpChar = []
+			s = self.hextobin(snpBuffer)
+			s = [s[i:i+6] for i in range(0,len(s),6)]
+			for i in s:
+				snpChar.append(self.charTable[int(int(i, 2)/16)][int(int(i, 2)%16)])
+			snpChar = "".join(snpChar).strip().split("|")
+			self.last = snpChar[0]
+			self.first = snpChar[1]
+			self.middle = snpChar[2]
 
 	def decodeCSP(self, string):
 		return '-----BEGIN PRIVATE KEY-----\n{}\n-----END PRIVATE KEY-----\n'.format(fill(standard_b64encode(bytes.fromhex("3068020100302106082A85030701010102301506092A85030701020102" + string[:2] + "06082A850307010102030440" + string[2:])).decode("ascii"), 64))
