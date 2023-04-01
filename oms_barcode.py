@@ -81,7 +81,6 @@ class OMSBarcode:
 				self.sex = "М"
 			else:
 				self.sex = "Ж"
-			print(string[(snpEnd+2)*2:(snpEnd+2)*2+4])
 			self.dob = int(string[(snpEnd+2)*2:(snpEnd+2)*2+4],16)
 			self.dob = (datetime.datetime.strptime('1900-01-01', "%Y-%m-%d") + datetime.timedelta(days=self.dob)).strftime('%d.%m.%Y')
 			self.exp = int(string[(snpEnd+4)*2:(snpEnd+4)*2+4],16)
