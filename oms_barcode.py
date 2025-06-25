@@ -1,6 +1,4 @@
 import datetime
-from base64 import standard_b64encode
-from textwrap import fill
 
 class OMSBarcode:
 	bitmap_type = ""
@@ -101,6 +99,3 @@ class OMSBarcode:
 			self.last = snpChar[0]
 			self.first = snpChar[1]
 			self.middle = snpChar[2]
-
-	def decodeCSP(self, string):
-		return '-----BEGIN PRIVATE KEY-----\n{}\n-----END PRIVATE KEY-----\n'.format(fill(standard_b64encode(bytes.fromhex("3068020100302106082A85030701010102301506092A85030701020102" + string[:2] + "06082A850307010102030440" + string[2:])).decode("ascii"), 64))

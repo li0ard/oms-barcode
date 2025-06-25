@@ -6,16 +6,14 @@
 
 ### Использование
 
-Декодирование штрихкода в 2 шага:
 - Инициализируйте класс `OMSBarcode`
 - Вызовите метод `fromString` у класса и передайте в аргумент содержимое штрихкода
 
-Декодирование ЭЦП в 1 шаг:
-- Передайте значение `signature` в метод `decodeCSP`
-
 Пример использования:
 
-![](https://habrastorage.org/webt/tm/ck/b8/tmckb8tjarztmsluwmbfib2eohm.png)
+| **Тип 1** | **Тип 2** |
+|:---------:|-----------|
+| ![](https://habrastorage.org/webt/_c/9s/dm/_c9sdmop9jipq6inktpwxx_amr8.png) | ![](https://habrastorage.org/webt/oh/lu/8c/ohlu8c1ffiymxwl8byiodb9keya.png) |
 
 ```py
 # 020016E959AF0F3A6C9DB3A17503BF84E869B9C3BF39C3A175AA5341C3800000000000000000000000000000000000000000000000000000000000000283EB0000015CEA680D9CDDEF0209E9F91FFEA628328CD157144B634204BAC30F573FF2E1021BDC2A28B2DD50A2761E4CF75FFCDBFBA71EAFC548AD07D38DC82A7D674BD09A
@@ -34,8 +32,6 @@ if oms.bitmap_type == "01":
 	print("ОГРН: " + oms.ogrn)
 	print("ОКАТО: " + oms.okato)
 print("ЭЦП: " + oms.signature)
-print("ЭЦП (BETA):")
-print(oms.decodeCSP(oms.signature))
 ```
 
 ### Свойства и методы класса
@@ -50,4 +46,3 @@ print(oms.decodeCSP(oms.signature))
 - `ogrn` - ОГРН страховой компании (Только тип №1)
 - `okato` - ОКАТО филиала страховой компании (Только тип №1)
 - `signature` - ЭЦП полиса ОМС
-- `decodeCSP(string)` - ЭЦП полиса в РЕМ формате
