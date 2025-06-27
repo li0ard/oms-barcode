@@ -1,3 +1,6 @@
+> [!WARNING]  
+> **[Проект переписан на TypeScript](https://github.com/li0ard/oms_barcode). Данная версия является архивной и больше не поддерживается**
+
 # oms-barcode
 ![](https://img.shields.io/badge/author-%40li0ard-blue.svg?maxAge=3600&style=flat-square)
 ![](https://img.shields.io/github/license/li0ard/oms-barcode.svg?maxAge=3600&style=flat-square)
